@@ -87,40 +87,42 @@ def main():
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
-    that connect the source to the target.
-
+    that connect the source to the target, using BFS.
+    source and target are unique IMDB actor ID's
     If no possible path, returns None.
     """
-    # TODO
-    # This keeps tracks of all the states explored
-    counter = 0
-    # Define a set for visited/explored
-    visited = set()
-    frontier = QueueFrontier()
-    # Node(State, Parent, Action)
+
     host = Node(source, None, None)
+    frontier = QueueFrontier()
     frontier.add(host)
+    visited = set()
 
     while True:
-        # If a connection is not found then raise an execption
-        if frontier.empty():
-            return None
- 		# A node from frontier and update the states
-        frontNode = frontier.remove()
-        counter = counter + 1
-        visited.add(frontNode.get_state())
-        for action, state in neighbors_for_person(frontNode.get_state()):
-            if not frontier.contains_state(state) and state not in visited:
-                child = Node(state, frontNode, action)
-                frontier.add(child)
-                if child.get_state() is target:
-                    relations =[]
-                    while child.get_parent() is not None:
-                        relations.append(child.get_action(), child.get_state())
-                        child = child.get_parent()
-                    relations.reverse()
-                    return relations
+      if len(visited) % 100 == 0:
+        print('Actors explored: ', len(visited))
+        print('Nodes left to expand: ', len(frontier.frontier))
 
+      if frontier.empty():
+        print('Frontier is Empty')
+        print(len(visited), 'actors explored to with no solution found!')
+        return None
+      frontNode = frontier.remove()
+      visited.add(frontNode.state)
+
+      for action, state in neighbors_for_person(frontNode.state):
+        if state == target:
+          print('Solution Found!')
+          print(len(visited), 'actors explored')
+          path = []
+          path.append((action, state))
+          while frontNode.parent != None:
+            path.append((frontNode.action, frontNode.state))
+            frontNode = frontNode.parent
+          path.reverse()
+          return path
+        if not frontier.contains_state(state) and state not in visited:
+          new_node = Node(state, frontNode, action)
+          frontier.add(new_node)
 
 
 def person_id_for_name(name):
