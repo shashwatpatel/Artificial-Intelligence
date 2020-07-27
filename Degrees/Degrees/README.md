@@ -28,5 +28,3 @@ Requires Python(3) to run:
 * Large database usage:
 
   $ python degrees.py large
-  OR
-  $ python degrees.py
